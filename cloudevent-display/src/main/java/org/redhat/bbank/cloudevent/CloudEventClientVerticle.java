@@ -85,13 +85,6 @@ public class CloudEventClientVerticle extends AbstractVerticle {
                 logger.info("  "+name+" : "+event.getExtension(name).toString());
               }
 
-              // Let's modify the event changing the source
-              CloudEvent outputEvent = CloudEventBuilder
-                  .v1(event)
-                  .withSource(URI.create("client-event"))
-                  //.withType("process.eligibility.noteapplication")
-                  .build();
-
               // Set response status code
               HttpServerResponse response = request
                   .response()
@@ -100,20 +93,20 @@ public class CloudEventClientVerticle extends AbstractVerticle {
               // Reply with the event in binary mode
               VertxMessageFactory
                   .createWriter(response)
-                  .writeBinary(outputEvent);
+                  .writeBinary(event);
             } else {
               logger.error("Error while decoding the event: " + asyncResult.cause());
-
               // Reply with a failure
               request
                   .response()
                   .setStatusCode(400)
                   .end();
+                  return;
             }
           });
     };
   }
-
+  
   /**
    * Generates an handler that sink the does the echo of the received event
    */
@@ -153,17 +146,11 @@ public class CloudEventClientVerticle extends AbstractVerticle {
 
 
 
-            // Let's modify the event changing the source
-            CloudEvent outputEvent = CloudEventBuilder
-              .v1(event)
-              .withSource(URI.create("client-event"))
-              //.withType("process.eligibility.noteapplication")
-              .build();
-
+            
             // Send the request to the sink and check the response
             VertxMessageFactory
                 .createWriter(client.postAbs(sink.toString()))
-                .writeBinary(outputEvent)
+                .writeBinary(event)
                 .onComplete(ar -> {
                   if (ar.failed()) {
                     logger.error("Something bad happened while sending event to the sink: " + ar.cause());
@@ -188,6 +175,7 @@ public class CloudEventClientVerticle extends AbstractVerticle {
                         .response()
                         .setStatusCode(500)
                         .end();
+                      return;
                   }
                 });
           });

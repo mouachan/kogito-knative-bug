@@ -4,6 +4,37 @@ To reproduce the bug on openshift:
 install from Operator hub
  -  kogito operator
  -  serveless (knative serving and eventing)
+```sh
+ cat <<-EOF | oc apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+ name: knative-serving
+---
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeServing
+metadata:
+    name: knative-serving
+    namespace: knative-serving
+EOF
+```
+```sh
+cat <<-EOF | oc apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: knative-eventing
+---
+apiVersion: operator.knative.dev/v1alpha1
+kind: KnativeEventing
+metadata:
+    name: knative-eventing
+    namespace: knative-eventing
+EOF
+```
+
+ oc label namespace kogito-knative-bug bindings.knative.dev/include=true
+
 deploy the broker
 ```sh
 oc create -f - <<EOF
@@ -81,43 +112,8 @@ mvn clean install
 ```
 create kogito service eligibility
 ```sh
-oc create -f - <<EOF
-apiVersion: app.kiegroup.org/v1beta1
-kind: KogitoBuild
-metadata:
-  name: eligibility
-spec:
-  type: Binary
- # type: RemoteSource
- # gitSource:
- #   contextDir: /eligibility
-  #  uri: "https://github.com/mouachan/bbank-apps"
-  #webHooks:
-  #  - type: "GitHub"
-  #    secret: "github"
-  # set your maven nexus repository to speed up the build time
-  #mavenMirrorURL:
----
-apiVersion: app.kiegroup.org/v1beta1
-kind: KogitoRuntime
-metadata:
-  annotations:
-    org.kie.kogito/managed-by: Kogito Operator
-    org.kie.kogito/operator-crd: KogitoRuntime
-    prometheus.io/path: /metrics
-    prometheus.io/port: "8080"
-    prometheus.io/scheme: http
-    prometheus.io/scrape: "true"
-  labels:
-    app: eligibility
-    eligibility: process
-  name: eligibility
-spec:
-  serviceLabels:
-    app: eligibility
-  infra:
-    - kogito-knative-infra
-EOF
+
+
 ```
 build and deploy kogito service
 ```sh
@@ -128,14 +124,14 @@ oc start-build eligibility --from-dir=target
 
 call the eligibility service
 ```sh
-curl -X POST \                                                                                                                                                                  19:24:37
+curl -X POST \
 -H "content-type: application/json"  \
 -H "ce-specversion: 1.0"  \
 -H "ce-source: /from/localhost"  \
 -H "ce-type: eligibilityapplication" \
 -H "ce-id: 12346"  \
 -d "{\"age\":3,\"amount\":50000,\"bilan\":{\"gg\":5,\"ga\":2,\"hp\":1,\"hq\":2,\"dl\":50,\"ee\":2,\"siren\":\"423646512\",\"variables\":[]},\"ca\":200000,\"eligible\":false,\"msg\":\"string\",\"nbEmployees\":10,\"notation\":{\"decoupageSectoriel\":0,\"note\":\"string\",\"orientation\":\"string\",\"score\":0,\"typeAiguillage\":\"string\"},\"publicSupport\":true,\"siren\":\"423646512\",\"typeProjet\":\"IRD\"}" \
-http://eligibility-kogito-knative-bug.apps.cluster-389f.389f.example.opentlc.com
+http://eligibility-kogito-knative-bug.apps.ocp4.ouachani.org 
 ```
 
 log the cloudevent-display service

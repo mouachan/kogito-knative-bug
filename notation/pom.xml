@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.redhat.banking</groupId>
-  <artifactId>eligibility</artifactId>
+  <groupId>org.redhat.bbank</groupId>
+  <artifactId>notation</artifactId>
   <version>2.0.0-SNAPSHOT</version>
   <properties>
     <surefire-plugin.version>2.22.1</surefire-plugin.version>
     <maven.compiler.target>11</maven.compiler.target>
-    <quarkus.platform.version>1.11.0.Final</quarkus.platform.version>
+    <quarkus.platform.version>1.12.1.Final</quarkus.platform.version>
     <maven.compiler.source>11</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
@@ -18,7 +18,7 @@
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
     <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
     <kogito.version>${project.version}</kogito.version>
-    <testcontainers.version>1.14.1</testcontainers.version>
+    <version.wiremock>2.27.2</version.wiremock>
   </properties>
   <dependencyManagement>
     <dependencies>
@@ -35,11 +35,11 @@
     <dependency>
       <groupId>org.redhat.bbank</groupId>
       <artifactId>model</artifactId>
-      <version>1.2.1-SNAPSHOT</version>
+      <version>${kogito.version}</version>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client</artifactId>
+      <artifactId>quarkus-resteasy</artifactId>
     </dependency>
     <dependency>
       <groupId>org.kie.kogito</groupId>
@@ -62,42 +62,26 @@
       <artifactId>smallrye-reactive-messaging-http</artifactId>
     </dependency>
     <dependency>
-       <groupId>io.quarkus</groupId>
-       <artifactId>quarkus-vertx-web</artifactId>
-     </dependency>
-     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-qute</artifactId>
-    </dependency>
-     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-resteasy-jackson</artifactId>
-    </dependency>
-     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-hibernate-validator</artifactId>
-    </dependency>
-    <!--dependency>
       <groupId>org.kie.kogito</groupId>
-      <artifactId>monitoring-prometheus-quarkus-addon</artifactId>
-     </dependency-->
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>process-management-addon</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>drools-decisiontables</artifactId>
+      <artifactId>kogito-api</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>process-management-addon</artifactId>
+    </dependency>
+    <!--dependency>
+      <groupId>org.kie.kogito</groupId>
+      <artifactId>monitoring-prometheus-quarkus-addon</artifactId>
+     </dependency-->
+     <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-container-image-docker</artifactId>
+    </dependency>
+     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
@@ -112,30 +96,51 @@
       <artifactId>kogito-test-utils</artifactId>
       <scope>test</scope>
     </dependency>
+    <!-- required to mock the sink server -->
+    <!-- Unfortunately MockWebServer is incompatible with RestEasy:
+    java.lang.NoSuchMethodError: 'com.github.fge.jackson.JsonNumEquals com.github.fge.jackson.JsonNumEquals.getInstance()'
+    -->
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-container-image-docker</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.kie.kogito</groupId>
-      <artifactId>kogito-scenario-simulation</artifactId>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock-jre8</artifactId>
+      <version>${version.wiremock}</version>
       <scope>test</scope>
     </dependency>
-  </dependencies>
 
+    <!--dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-container-image-s2i</artifactId>
+    </dependency-->
+    <!--dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-openshift</artifactId>
+    </dependency-->
+  </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.jboss.jandex</groupId>
+        <artifactId>jandex-maven-plugin</artifactId>
+        <version>1.0.8</version>
+        <executions>
+          <execution>
+            <id>make-index</id>
+            <goals>
+              <goal>jandex</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
         <version>${quarkus-plugin.version}</version>
-        <extensions>true</extensions>
         <executions>
           <execution>
             <goals>
-              <goal>build</goal>
               <goal>generate-code</goal>
               <goal>generate-code-tests</goal>
+              <goal>build</goal>
             </goals>
           </execution>
         </executions>
@@ -154,6 +159,7 @@
           </systemPropertyVariables>
         </configuration>
       </plugin>
+
     </plugins>
   </build>
   <profiles>
