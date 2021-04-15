@@ -33,3 +33,8 @@ spec:
     app: notation
   infra:
     - kogito-knative-infra
+  resources:
+    requests:
+      memory: 1Gi 
+    limits:
+      memory: 2Gi 

@@ -136,7 +136,7 @@ http://eligibility-kogito-knative-bug.apps.ocp4.ouachani.org
 
 log the cloudevent-display service
 ```sh
-oc logs -l serving.knative.dev/service=cloudevent-display -c user-container --tail=-1                                                                                           19:32:27
+oc logs -l serving.knative.dev/service=cloudevent-display -c user-container --tail=-1 
 K_SINK env : http://broker-ingress.kogito-knative-bug.svc.cluster.local/kogito-knative-bug/default
 Server started on port 8080
 Error while decoding the event: io.cloudevents.rw.CloudEventRWException: Invalid extensions name: kogitoprocessinstanceid
