@@ -15,6 +15,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.redhat.bbank.model.Bilan;
+import org.redhat.bbank.model.Loan;
+import org.redhat.bbank.model.Notation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,13 +64,16 @@ public class CloudEventListenerTest {
         bilan.setHq(2);
         bilan.setDl(50);
         bilan.setEe(2);
+ 
+        Notation notation = new Notation();
+        Loan loan = new Loan("423646512",100000.0,10.0,25,true,"PROJECT",50000,notation,true,"",bilan,0,0);
         given()
                 .header("ce-specversion", "1.0")
                 .header("ce-id", "000")
                 .header("ce-source", "/from/localhost")
                 .header("ce-type", "noteapplication")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(objectMapper.writeValueAsString(bilan)).post("/").then().statusCode(200);
+                .body(objectMapper.writeValueAsString(loan)).post("/").then().statusCode(200);
 
         // have we received the message? We force the sleep since the WireMock framework doesn't support waiting/timeout verification
         LOGGER.info("Waiting 4 seconds to receive the produced message");
