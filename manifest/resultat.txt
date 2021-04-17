@@ -1,0 +1,101 @@
+export ELIGIBILITY_ROUTE=http://$(oc get route eligibility  --template={{.spec.host}})  
+echo $ELIGIBILITY_ROUTE 
+
+curl -X POST \
+-H "content-type: application/json"  \
+-H "ce-specversion: 1.0"  \
+-H "ce-source: /from/localhost"  \
+-H "ce-type: eligibilityapplication" \
+-H "ce-id: 12346"  \
+-d "{\"age\":3,\"amount\":50000,\"bilan\":{\"gg\":5,\"ga\":2,\"hp\":1,\"hq\":2,\"dl\":50,\"ee\":2,\"siren\":\"423646512\",\"variables\":[]},\"ca\":200000,\"eligible\":false,\"msg\":\"string\",\"nbEmployees\":10,\"notation\":{\"decoupageSectoriel\":0,\"note\":\"string\",\"orientation\":\"string\",\"score\":0,\"typeAiguillage\":\"string\"},\"publicSupport\":true,\"siren\":\"423646512\",\"typeProjet\":\"IRD\"}" \
+$ELIGIBILITY_ROUTE
+
+oc logs -l serving.knative.dev/service=cloudevent-display -c user-container --tail=-1
+☁️  cloudevents.Event
+Validation: valid
+Context Attributes,
+  specversion: 1.0
+  type: noteapplication
+  source: /process/eligibility
+  id: 8146dbe6-a61f-438f-a3b2-d2f4850f201d
+  time: 2021-04-15T04:35:06.308822Z
+Extensions,
+  knativearrivaltime: 2021-04-15T04:35:06.311561176Z
+  kogitoprocid: eligibility
+  kogitoprocinstanceid: 9c8af898-0ea2-4e3a-8d13-62fe96e209e8
+  kogitousertaskist: 1
+Data,
+  {"siren":"423646512","ca":200000.0,"nbEmployees":10.0,"age":3,"publicSupport":true,"typeProjet":"IRD","amount":50000.0,"notation":{"score":0.0,"note":"string","orientation":"string","decoupageSectoriel":0.0,"typeAiguillage":"string"},"eligible":true,"msg":"Eligible","bilan":{"siren":"423646512","gg":5.0,"ga":2.0,"hp":1.0,"hq":2.0,"hn":0.0,"fl":0.0,"fm":0.0,"dl":50.0,"ee":2.0,"variables":[]},"rate":0.0,"nbmonths":0}
+
+Using my own cloud-event-display
+
+Context Attributes
+  null
+  specVersion: 1.0
+  type: noteapplication
+  source: /process/eligibility
+  id: 76158043-3dda-49fd-a9f7-a8cd4d1ec270
+  datacontenttype: null
+Data
+{"siren":"423646512","ca":200000.0,"nbEmployees":10.0,"age":3,"publicSupport":true,"typeProjet":"IRD","amount":50000.0,"notation":{"score":0.0,"note":"string","orientation":"string","decoupageSectoriel":0.0,"typeAiguillage":"string"},"eligible":true,"msg":"Eligible","bilan":{"siren":"423646512","gg":5.0,"ga":2.0,"hp":1.0,"hq":2.0,"hn":0.0,"fl":0.0,"fm":0.0,"dl":50.0,"ee":2.0,"variables":[]},"rate":0.0,"nbmonths":0}
+extensions
+  kogitousertaskist : 1
+  kogitoprocinstanceid : 902f1ab3-46f4-4d8b-ba33-586c0fc3266b
+  knativearrivaltime : 2021-04-15T05:11:35.599441599Z
+  kogitoprocid : eligibility
+headers Host=cloudevent-display.kogito-knative-bug.svc.cluster.local
+User-Agent=Go-http-client/1.1
+Content-Length=418
+Accept-Encoding=gzip
+Ce-Id=76158043-3dda-49fd-a9f7-a8cd4d1ec270
+Ce-Knativearrivaltime=2021-04-15T05:11:35.599441599Z
+Ce-Kogitoprocid=eligibility
+Ce-Kogitoprocinstanceid=902f1ab3-46f4-4d8b-ba33-586c0fc3266b
+Ce-Kogitousertaskist=1
+Ce-Source=/process/eligibility
+Ce-Specversion=1.0
+Ce-Time=2021-04-15T05:11:35.588592Z
+Ce-Type=noteapplication
+Forwarded=for=10.131.0.12;proto=http
+K-Proxy-Request=activator
+Traceparent=00-479f16a07b7ac49afc4bfff91c80c798-cbf5f66b379e23f9-00
+X-Forwarded-For=10.131.0.12, 10.131.0.31
+X-Forwarded-Proto=http
+X-Request-Id=4b895a42-d70a-4f72-82a4-07d2414a4632
+
+Error received from sink: 500 Internal Server Error
+
+export NOTATION_ROUTE=http://$(oc get route notation  --template={{.spec.host}}) 
+echo $NOTATION_ROUTE 
+curl -X POST \
+-H "content-type: application/json"  \
+-H "ce-specversion: 1.0"  \
+-H "ce-source: /from/localhost"  \
+-H "ce-type: noteapplication" \
+-H "ce-id: 12346"  \
+-d "{\"age\":3,\"amount\":50000,\"bilan\":{\"gg\":5,\"ga\":2,\"hp\":1,\"hq\":2,\"dl\":50,\"ee\":2,\"siren\":\"423646512\",\"variables\":[]},\"ca\":200000,\"eligible\":false,\"msg\":\"string\",\"nbEmployees\":10,\"notation\":{\"decoupageSectoriel\":0,\"note\":\"string\",\"orientation\":\"string\",\"score\":0,\"typeAiguillage\":\"string\"},\"publicSupport\":true,\"siren\":\"423646512\",\"typeProjet\":\"IRD\"}" \
+$NOTATION_ROUTE
+oc logs -l serving.knative.dev/service=cloudevent-display -c user-container --tail=-1
+  ☁️  cloudevents.Event
+Validation: valid
+Context Attributes,
+  specversion: 1.0
+  type: model1
+  source: /process/notation
+  id: 0486172c-3e18-426e-89fb-388499c600dc
+  time: 2021-04-15T04:45:09.976501Z
+Extensions,
+  knativearrivaltime: 2021-04-15T04:45:09.979059835Z
+  kogitoprocid: notation
+  kogitoprocinstanceid: 9b4c4cdd-089b-4163-8748-557154e1577d
+  kogitousertaskist: 1
+Data,
+  {"score":0.0,"note":"A","orientation":"Approved","decoupageSectoriel":1.0,"typeAiguillage":"MODELE_1"}
+
+
+  Errors :
+
+  {"level":"error","ts":"2021-04-15T04:24:50.622Z","logger":"mt_broker_filter","caller":"filter/filter_handler.go:220","msg":"failed to write response","error":"received a non-empty response not recognized as CloudEvent. The response MUST be or empty or a valid CloudEvent","stacktrace":"knative.dev/eventing/pkg/mtbroker/filter.(*Handler).send\n\t/opt/app-root/src/go/src/knative.dev/eventing/pkg/mtbroker/filter/filter_handler.go:220\nknative.dev/eventing/pkg/mtbroker/filter.(*Handler).ServeHTTP\n\t/opt/app-root/src/go/src/knative.dev/eventing/pkg/mtbroker/filter/filter_handler.go:202\ngo.opencensus.io/plugin/ochttp.(*Handler).ServeHTTP\n\t/opt/app-root/src/go/src/knative.dev/eventing/vendor/go.opencensus.io/plugin/ochttp/server.go:92\nknative.dev/pkg/network/handlers.(*Drainer).ServeHTTP\n\t/opt/app-root/src/go/src/knative.dev/eventing/vendor/knative.dev/pkg/network/handlers/drain.go:88\nnet/http.serverHandler.ServeHTTP\n\t/usr/lib/golang/src/net/http/server.go:2848\nnet/http.(*conn).serve\n\t/usr/lib/golang/...
+
+  {"level":"error","ts":"2021-04-15T04:51:14.471Z","logger":"inmemorychannel-dispatcher.knative.dev-eventing-pkg-reconciler-inmemorychannel-dispatcher.Reconciler","caller":"fanout/fanout_message_handler.go:283","msg":"Fanout had an error","knative.dev/pod":"imc-dispatcher-7bf7dd887d-4blp9","knative.dev/traceid":"7504b3c7-3fcf-4102-8f3e-ff0de2ae451a","knative.dev/key":"kogito-knative-bug/default-kne-trigger","error":"unable to complete request to http://broker-filter.knative-eventing.svc.cluster.local/triggers/kogito-knative-bug/trigger-notation/1b01e0cd-bae1-437a-8148-a14d59b67537: unexpected HTTP response, expected 2xx, got 415","stacktrace":"knative.dev/eventing/pkg/channel/fanout.(*FanoutMessageHandler).dispatch\n\t/opt/app-root/src/go/src/knative.dev/eventing/pkg/channel/fanout/fanout_message_handler.go:283\nknative.dev/eventing/pkg/channel/fanout.createMessageReceiverFunction.func1.1\n\t/opt/app-root/src/go/src/knative.dev/eventing/pkg/channel/fanout/fanout_message_handler.go:192"}
+
