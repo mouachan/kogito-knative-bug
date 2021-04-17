@@ -110,10 +110,10 @@ build the model
 cd model
 mvn clean install
 ```
-create kogito service eligibility
+create kogito services eligibility and notation
 ```sh
 oc apply -f ../manifest/eligibility-kogitoapp.yml
-
+oc apply -f ../manifest/notation-kogitoapp.yml
 ```
 build and deploy eligibility service
 ```sh
