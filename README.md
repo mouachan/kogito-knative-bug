@@ -67,7 +67,7 @@ spec:
         - env:
             - name: K_SINK
               value: >-
-                http://broker-ingress.knative-eventing.svc.cluster.local/kogito-knative-bug/default
+                http://broker-ingress.knative-eventing.svc.cluster.local/kogito-knative/default
           image: registry.hub.docker.com/mouachani/cloudevent-display
 EOF
 ```
@@ -173,7 +173,7 @@ http://notation-kogito-knative-bug.apps.cluster-2ab3.2ab3.sandbox777.opentlc.com
 
 call the notation service
 ```sh
-curl -X POST \                                                                                                                                                                                                    07:15:36
+curl -X POST \
 -H "content-type: application/json"  \
 -H "ce-specversion: 1.0"  \
 -H "ce-source: /from/localhost"  \
