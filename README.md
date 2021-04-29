@@ -1,5 +1,4 @@
 
-To reproduce the bug on openshift:
 
 install from Operator hub
  -  kogito operator
